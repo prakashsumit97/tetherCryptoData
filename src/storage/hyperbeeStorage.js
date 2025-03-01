@@ -14,14 +14,14 @@ async function saveHistoricalPrice(cryptoId, timestamp, priceData) {
 
 async function getLatestPrice(cryptoId) {
     const data = await hbee.get(`crypto:latest:${cryptoId}`);
-    return data?.value ? JSON.parse(data.value.toString('utf-8')) : null;
+    return data?.value ? Buffer.from(data.value).toString('utf-8') : null;
 }
 
 async function getHistoricalPrices(cryptoId, from, to) {
     const range = hbee.createReadStream({ gte: `crypto:history:${cryptoId}:${from}`, lte: `crypto:history:${cryptoId}:${to}` });
     const prices = [];
     for await (const data of range) {
-        prices.push(JSON.parse(data.value.toString('utf-8')));
+        prices.push(Buffer.from(data.value).toString('utf-8'));
     }
     return prices;
 }

@@ -1,11 +1,14 @@
 'use strict';
 
-const RPC = require('@hyperswarm/rpc');
-const DHT = require('hyperdht');
+import RPC from '@hyperswarm/rpc';
+import DHT from 'hyperdht';
+import * as dotenv from "dotenv";
+// Load environment variables
+dotenv.config({ path: ".env" });
 
 const main = async () => {
     // Setup DHT to discover the RPC server
-    const dht = new DHT({ bootstrap: [{ host: process.env.PUBLIC_KEY, port: 30001 }] });
+    const dht = new DHT({ bootstrap: [{ host: '127.0.0.1', port: 30001 }] });
     await dht.ready();
 
     // Replace with the actual public key of the RPC server (printed in server logs)
@@ -22,7 +25,8 @@ const main = async () => {
         const latestPrices = JSON.parse(latestPricesRaw.toString('utf-8'));
 
         console.log('✅ Latest Prices:');
-        Object.entries(latestPrices).forEach(([coin, data]) => {
+        Object.entries(latestPrices).forEach(([coin, datas]) => {
+            const data = JSON.parse(datas)
             console.log(`🔹 ${coin.toUpperCase()}: $${data.price} (From Exchanges: ${data.exchanges.join(', ')})`);
         });
 
@@ -42,7 +46,8 @@ const main = async () => {
         console.log('✅ Historical Prices:');
         Object.entries(historicalPrices).forEach(([coin, dataArray]) => {
             console.log(`🔹 ${coin.toUpperCase()}:`);
-            dataArray.forEach(entry => {
+            dataArray.forEach(entrys => {
+                const entry = JSON.parse(entrys)
                 console.log(`   - $${entry.price} (Time: ${new Date(entry.timestamp).toLocaleString()})`);
             });
         });
